@@ -25,52 +25,33 @@ interface Pokemon {
 }
 
 function QuestionOne() {
-    const legendaries: Pokemon[] = [];
-    for (let p of pokemon_list) {
-        let pokemon: Pokemon;
-        pokemon = p;
-        if (pokemon.legendary){
-            legendaries.push(pokemon);
-        }
-    }
+    const legendaries: Pokemon[] = pokemon_list.filter(p => p.legendary);
 
     console.log(`\n1. There are ${legendaries.length} legendary Pokemon:`);
 
-    const legendaryNames: string[] = [];
-    for (let p of legendaries) {
-        legendaryNames.push(p.name);
-    }
+    const legendaryNames: string[] = legendaries.map(legendary => legendary.name);
+    
     console.log(legendaryNames);
-
 }
 
 function QuestionTwo() {
     console.log(`\n2. These are the Pokemon with the highest defense stat:`);
-    pokemon_list.sort(function(pokemonA, pokemonB) {
-        return pokemonB.def - pokemonA.def;
-    });
-    for (let p of pokemon_list.slice(0, 3)) {
+    pokemon_list.sort((pokemonA, pokemonB) => pokemonB.def - pokemonA.def);
+    const maxDef = pokemon_list[0].def
+    const pokemonArrayWithHighestDef = pokemon_list.filter(p => p.def == maxDef);
+    for (let p of pokemonArrayWithHighestDef) {
         console.log({name: p.name, def: p.def});
     }
     
 }
 
 function QuestionThree() {
-    const overweightPokemon: Pokemon[] = [];
-    for (let p of pokemon_list) {
-        let pokemon: Pokemon;
-        pokemon = p;
-        if (pokemon.weight > pokemon.height * 60) {
-            overweightPokemon.push(pokemon);
-        }
-    }
+    const overweightPokemon: Pokemon[] = pokemon_list.filter(p => p.weight > p.height * 60);
+    // overweight_pokemon_list = [ p for p in pokemon_list if p.weight > p.height * 60 ]
 
     console.log(`\n3. There are ${overweightPokemon.length} overweight Pokemon and their names are:`);
 
-    const overweightList: string[] = [];
-    for (let p of overweightPokemon) {
-        overweightList.push(p.name);
-    }
+    const overweightList: string[] = overweightPokemon.map(p => p.name);
     console.log(overweightList);
 }
 
@@ -82,26 +63,18 @@ function QuestionFour() {
         return count;
     }
 
-    const pokeNumber: number[] = [];
-    for (let p of pokemon_list) {
-        pokeNumber.push(p.number);
-    }
+    const pokeNumber: number[] = pokemon_list.map(p => p.number);
 
-    const variedPokemon: any[] = [];
-    let pokeNum = [];
-
-    for (let p of pokemon_list) {
+    const variedPokemon: any[] = pokemon_list.filter(p => {
         let frequency: number = Occurence(pokeNumber, p.number);
-        if (frequency > 1) {
-            pokeNum.push(p.number);
-            variedPokemon.push({
-                number: p.number,
-                name: p.name,
-                ability: [p.ability1, p.ability2],
-                hidden_ability: p.hidden_ability,
-            });
-        }
-    }
+        return frequency > 1;
+    }).map(p => ({
+        number: p.number,
+        name: p.name,
+        ability: [p.ability1, p.ability2],
+        hidden_ability: p.hidden_ability,
+    });
+    let pokeNum = variedPokemon.map(p => p.number);
 
     let newPokemonNum = [... new Set(pokeNum)];
 
@@ -110,8 +83,9 @@ function QuestionFour() {
     );
 
     let pokemonNames: string[] = [];
-    for (let n of newPokemonNum){
-        for (let p of pokemon_list) {
+    for (let n of newPokemonNum){ // newPokemonNum.length == 100
+        for (let p of pokemon_list) { // newPokemonNum.length == 200
+            // 100 * 200 = 20,000
             if (n == p.number) {
                 pokemonNames.push(p.name);
             }
